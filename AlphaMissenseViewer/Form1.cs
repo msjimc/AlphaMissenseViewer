@@ -12,9 +12,15 @@ namespace AlphaMissenseViewer
 {
     public partial class Form1 : Form
     {
+        private string fileName = "";
+        private int headerLength = -1;
+        Dictionary<string, PointF> starts = new Dictionary<string, PointF>();
+
         public Form1()
         {
             InitializeComponent();
+            cboBase.SelectedIndex = 0;
+            cboChromosome.SelectedIndex = 0;
         }
 
         private void btnQuit_Click(object sender, EventArgs e)
@@ -23,96 +29,117 @@ namespace AlphaMissenseViewer
         }
 
         private void button1_Click(object sender, EventArgs e)
+        {           
+            if (cboChromosome.SelectedIndex == 0 || cboBase.SelectedIndex == 0)
+            { MessageBox.Show("Please select a chromosome and Alt base"); return; }
+            int place = -1;
+            try
+            {
+                place = Convert.ToInt32(txtPlace.Text.Trim().Replace(",", ""));
+                if (place <0 || place > 250000000)
+                { throw new Exception("Number out of range"); }
+            }
+            catch { MessageBox.Show("Please enter a interger number for the chromosomal location"); return; }            
+
+            FindLocation(fileName, place.ToString(), cboBase.Text.ToUpper(), cboChromosome.Text.ToLower()); ;
+        }
+
+        private void FindLocation(string fileName, string place, string altBase, string chromosome)
         {
-            string fileName = FileString.OpenAs("Select the score matrix file", "*.tsv|*.tsv");
-            if (System.IO.File.Exists(fileName) == false) { return; }
-
-
-            System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
-            long size = fi.Length;
-
-            System.IO.StreamReader fs = null;
-            fs = new System.IO.StreamReader(fileName);
-
-            int headerLength =-1;
-            int lineLength = -1;
-            int counter = 1;
-            bool hasslashN = false;
-            bool hasSlashR = false;
-            char lastC = '\0';
-            while (fs.Peek() > 0 && headerLength ==-1)
+            System.IO.FileStream sf = null;
+            string data = "";
+            try
             {
-                char c = (char)fs.Read();
+                System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+                long size = fi.Length;                
+                sf = new System.IO.FileStream(fileName, System.IO.FileMode.Open);
+                long top = fi.Length;
+                long bottom = headerLength;
+                string chr = chromosome;
+                long position = (fi.Length - headerLength) / 2;
+                data = newLine(sf, position, fi.Length, headerLength);
+                long lastPosition = -1;
+                while (true)
+                {
+                    string[] items = data.Split('\t');
+                    long diff = items[0].CompareTo(chr);
+                    if (diff == 0)
+                    {
+                        diff = Convert.ToInt64(items[1]) - Convert.ToInt64(place);
+                        if (diff == 0)
+                        {
+                            data = GetMatch(sf, position, chromosome, place, altBase, items, fi.Length, headerLength);
+                            break;
+                        }
+                    }
 
-                if ((lastC == '\r' || lastC == '\n') && c != '#')
-                { headerLength = counter; }
-                else if (c == '\n') 
-                { hasslashN = true; }
-                else if (c == '\r') 
-                { hasSlashR = true; }
-                lastC = c;
-                counter++;
-                System.Diagnostics.Debug.Write(c);
+                    if (diff == 0)
+                    { break; }
+                    else if (diff < 0)
+                    {
+                        bottom = position;
+                        long i = top - bottom;
+                        position += (top - bottom) / 2;
+                        data = newLine(sf, position, fi.Length, headerLength);
+
+                    }
+                    else if (diff > 0)
+                    {
+                        top = position;
+                        position -= (top - bottom) / 2;
+                        data = newLine(sf, position, fi.Length, headerLength);
+                    }
+                    System.Diagnostics.Debug.WriteLine(data + "\t" + top + "\t" + bottom + "\t" + position);
+                    if (lastPosition == position)
+                    {
+                        sf.Close();
+                        txtAnswer.Text = "Couldn't fine the position. Nearest line:\r\n" + data;
+                        return;
+                    }
+                    lastPosition = position;
+                }
             }
-           
+            catch { MessageBox.Show("Couldn't open file"); }
+            finally { if (sf != null) { sf.Close(); } }
+            txtAnswer.Text ="Best matc\rh\n" + data;
+        }
 
-            headerLength--;
+        private string GetMatch(System.IO.FileStream sf, long position, string chromosome, string place, string altBase, string[] items, long filelength, int headerlength)
+        {
+            string answer = "";
 
-            System.Diagnostics.Debug.WriteLine("Has n " + hasslashN.ToString());
-            System.Diagnostics.Debug.WriteLine("Has r " + hasSlashR.ToString());
-            System.Diagnostics.Debug.WriteLine("Header len " + headerLength.ToString());
-            System.Diagnostics.Debug.WriteLine("Line len " + lineLength.ToString());
+            position -= 300;
+            if (position < headerLength)
+            { position = headerLength; }
 
-            fs.Close();
-             
+            long positionStart = position;
+            string line = "";
 
-            System.IO.FileStream sf = new System.IO.FileStream(fileName,System.IO.FileMode.Open);
-            long top = fi.Length;
-            long bottom = headerLength;
-            string chr = "chr13";
-            string place = "40665648";
-            long position = (fi.Length - headerLength)/2;
-            string data = newLine(sf, position, fi.Length, headerLength);
-            long lastPosition = -1;
-            while (true)
+            while (position - positionStart < 600 && position < filelength)
             {
-                string[] items = data.Split('\t');
-                long diff = items[0].CompareTo(chr);
-                if (diff == 0)
-                {
-                    diff = Convert.ToInt64(items[1]) - Convert.ToInt64(place);
-                }
+                line = newLine(sf, position, filelength, headerlength);
+                string[] bits = line.Split('\t');
 
-                if (diff ==0)
-                { break; }
-                else if (diff < 0)
+                if (items[0].ToLower() == chromosome && bits[1] == place)
                 {
-                    bottom = position;
-                    long i = top - bottom;
-                    position += (top - bottom) / 2;
-                    data = newLine(sf, position, fi.Length, headerLength);
-
+                    if (altBase == "ANY" || altBase==bits[2] )
+                    {
+                        if (answer.Contains(line) == false)
+                        { answer += "\r\n" + line; }
+                    }
+                    else
+                    {
+                        if (altBase == bits[3])
+                        {
+                            answer = line;
+                            return answer;
+                        }
+                    }
                 }
-                else if (diff>0)
-                {
-                    top = position;
-                    position -= (top - bottom) / 2;
-                    data = newLine(sf, position, fi.Length, headerLength);
-                }
-                System.Diagnostics.Debug.WriteLine(data + "\t" + top + "\t" + bottom + "\t" + position);
-                if (lastPosition==position)
-                { break; }
-                lastPosition = position;
+                position += 50 ;
             }
-                        
 
-                sf.Close();
-
-            if (true==true)
-            { }
-
-            
-
+            return answer;
         }
 
         private string newLine(System.IO.FileStream sf, long position, long filelength, int headerlength)
@@ -142,7 +169,10 @@ namespace AlphaMissenseViewer
 
         private void btnIndex_Click(object sender, EventArgs e)
         {
-            string fileName = FileString.OpenAs("Select the score matrix file", "*.tsv|*.tsv");
+            if (starts.Count == 0)
+            { }
+
+            fileName = FileString.OpenAs("Select the score matrix file", "*.tsv|*.tsv");
             if (System.IO.File.Exists(fileName) == false) { return; }
 
             Dictionary<string, long> firstUniprot = new Dictionary<string, long>();
@@ -202,5 +232,136 @@ namespace AlphaMissenseViewer
             finally { if (fw != null) { fw.Close(); } }
         
         }
+
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            fileName = FileString.OpenAs("Select the score matrix file", "*.tsv|*.tsv");
+            if (System.IO.File.Exists(fileName) == false) { return; }
+
+            System.IO.StreamReader fs = null;
+            try
+            {
+                fs = new System.IO.StreamReader(fileName);
+                headerLength = -1;
+                int counter = 1;
+                char lastC = '\0';
+                while (fs.Peek() > 0 && headerLength == -1)
+                {
+                    char c = (char)fs.Read();
+
+                    if ((lastC == '\r' || lastC == '\n') && c != '#')
+                    { headerLength = counter; }
+                    lastC = c;
+                    counter++;
+                }
+
+
+                headerLength--;
+            }
+            finally { if (fs != null) { fs.Close(); } }
+
+            if (headerLength > -1)
+            {
+                starts = new Dictionary<string, PointF>();
+
+                btnSearchLocation.Enabled = true;
+                btnIndex.Enabled = true;
+                string indexFile = fileName.Substring(0, fileName.LastIndexOf(".")) + ".index";
+                if (System.IO.File.Exists(indexFile)== false)
+                {
+                    btnSearchName.Enabled = false;
+                    lblIndex.Visible = true;
+                }
+                else
+                {
+                    btnSearchName.Enabled = true;
+                    lblIndex.Visible = false;
+                }
+
+            }
+        }
+
+        private void btnSearchName_Click(object sender, EventArgs e)
+        {
+            System.IO.StreamReader fs = null;
+
+            try
+            {
+                if (starts.Count == 0)
+                {
+                    string indexFile = fileName.Substring(0, fileName.LastIndexOf(".")) + ".index";
+                    fs= new System.IO.StreamReader(indexFile);
+
+                    string line = "";
+                    string[] items = null;
+
+                    while (fs.Peek() > 0)
+                    {
+                        line = fs.ReadLine();
+                        items = line.Split('\t');
+                       
+                        if (items.Length > 2)
+                        {
+                            long sValue = Convert.ToInt64(items[1]);
+                            long eValuee = Convert.ToInt64(items[2]);
+                            PointF p = new PointF(sValue, eValuee);
+                            if (starts.ContainsKey(items[0].ToLower()) == false)
+                            { starts.Add(items[0].ToLower(), p); }
+                        }
+                    }
+
+                }
+            }
+            catch(Exception ex)
+            { }
+            finally
+            { if (fs != null) { fs.Close(); } }
+
+            string data = "";
+            string name = txtName.Text.Trim().ToLower();
+            if (starts.ContainsKey(name) == true)
+            {
+                PointF p = starts[name];
+                System.IO.FileStream sf = null;               
+                try
+                {
+                    System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+                    long size = fi.Length;
+                    sf = new System.IO.FileStream(fileName, System.IO.FileMode.Open);
+                    data = GetMatchs(sf, (long)p.X, (long)p.Y, name, size, headerLength);
+                }
+                finally { if (sf != null) { sf.Close(); } }
+            }
+            txtAnswer.Text=data;
+
+        }
+
+        private string GetMatchs(System.IO.FileStream sf, long positionStart, long positionEnd, string name, long filelength, int headerlength)
+        {
+            string answer = "";
+
+            long position = positionStart - 300;
+            if (position < headerLength)
+            { position = headerLength; }
+                        
+            string line = "";
+
+            while (position < positionEnd + 300 && position < filelength)
+            {
+                line = newLine(sf, position, filelength, headerlength);
+                string[] bits = line.Split('\t');
+
+                if (bits[5].ToLower() == name || bits[6].ToLower() == name)
+                {
+                    if (answer.Contains(line) == false)
+                    { answer += "\r\n" + line; }
+                }
+                position += 50;
+            }
+
+            return answer;
+        }
+
     }
 }
