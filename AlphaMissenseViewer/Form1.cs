@@ -101,7 +101,7 @@ namespace AlphaMissenseViewer
             }
             catch { MessageBox.Show("Couldn't open file"); }
             finally { if (sf != null) { sf.Close(); } }
-            txtAnswer.Text ="Best matc\rh\n" + data;
+            txtAnswer.Text ="Best match\r\n" + data;
         }
 
         private string GetMatch(System.IO.FileStream sf, long position, string chromosome, string place, string altBase, string[] items, long filelength, int headerlength)
