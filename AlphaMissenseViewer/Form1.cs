@@ -169,11 +169,8 @@ namespace AlphaMissenseViewer
 
         private void btnIndex_Click(object sender, EventArgs e)
         {
-            if (starts.Count == 0)
-            { }
 
-            fileName = FileString.OpenAs("Select the score matrix file", "*.tsv|*.tsv");
-            if (System.IO.File.Exists(fileName) == false) { return; }
+           if (System.IO.File.Exists(fileName) == false) { return; }
 
             Dictionary<string, long> firstUniprot = new Dictionary<string, long>();
             Dictionary<string, long> firstTranscript = new Dictionary<string, long>();
@@ -230,7 +227,10 @@ namespace AlphaMissenseViewer
 
             }
             finally { if (fw != null) { fw.Close(); } }
-        
+
+            btnSearchLocation.Enabled = true;
+            lblIndex.Visible = false;
+
         }
 
 
@@ -272,11 +272,13 @@ namespace AlphaMissenseViewer
                 {
                     btnSearchName.Enabled = false;
                     lblIndex.Visible = true;
+                    btnIndex.Enabled = true;
                 }
                 else
                 {
                     btnSearchName.Enabled = true;
                     lblIndex.Visible = false;
+                    btnIndex.Enabled = false;
                 }
 
             }
