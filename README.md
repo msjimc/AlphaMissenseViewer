@@ -10,7 +10,7 @@ The search function works by performing a [binary search](https://en.wikipedia.o
 
 ## Downloading the data files
 
-Currently the AlphaMissense data files are [here](https://console.cloud.google.com/storage/browser/dm_alphamissense;tab=objects?prefix=&forceOnObjectsSortingFiltering=false&pli=1) and can be downloaded by either clicking on the tray icon on the rigth of the landing page or by selecting the file and selecting the 'Download' button on the file specific page. Once downloaded extract the file using a program like 7zip or the inbuilt decomression function in newer Windows OS's.
+Currently the AlphaMissense data files are [here](https://console.cloud.google.com/storage/browser/dm_alphamissense;tab=objects?prefix=&forceOnObjectsSortingFiltering=false&pli=1) and can be downloaded by either clicking on the tray icon on the right of the landing page or by selecting the file and selecting the 'Download' button on the file specific page. Once downloaded extract the file using a program like 7zip or the inbuilt decompression function in newer Windows OS's.
 
 ## Selecting the (decompressed) data file
 
@@ -69,12 +69,12 @@ Figure 5b: Variants linked to a feature's ID.
 
 Figure 5c
 
-### making and index file
+### Mking and index file
 
 Select the data file you wish to index and press the ``Index`` button. ``AlphaMissenseViewer will read the file and when finished create an index file with the same name as the data file, but with the *.tsv file extension changed to *,index. Once made the 2nd ``Search`` button should be activated and the red warning message will disappear.  
-It's important to note that the locations in the index file are the locations for the entries in the data file and not genomic coordintes.
+It's important to note that the locations in the index file are the locations for the entries in the data file and not genomic coordinates.
 
 ![Figure 6](images/figure6.jpg)
 
-Figure 6: Indexing a datafile
+Figure 6: Indexing a data file
 
