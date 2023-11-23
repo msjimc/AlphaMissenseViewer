@@ -69,7 +69,7 @@ Figure 5b: Variants linked to a feature's ID.
 
 Figure 5c
 
-### Mking and index file
+### Making and index file
 
 Select the data file you wish to index and press the ``Index`` button. ``AlphaMissenseViewer will read the file and when finished create an index file with the same name as the data file, but with the *.tsv file extension changed to *,index. Once made the 2nd ``Search`` button should be activated and the red warning message will disappear.  
 It's important to note that the locations in the index file are the locations for the entries in the data file and not genomic coordinates.
