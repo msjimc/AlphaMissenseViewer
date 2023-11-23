@@ -106,9 +106,9 @@ namespace AlphaMissenseViewer
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(96, 172);
+            this.txtName.Location = new System.Drawing.Point(110, 172);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(367, 20);
+            this.txtName.Size = new System.Drawing.Size(353, 20);
             this.txtName.TabIndex = 4;
             // 
             // lblIndex
@@ -116,7 +116,7 @@ namespace AlphaMissenseViewer
             this.lblIndex.AutoSize = true;
             this.lblIndex.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblIndex.ForeColor = System.Drawing.Color.Red;
-            this.lblIndex.Location = new System.Drawing.Point(0, 175);
+            this.lblIndex.Location = new System.Drawing.Point(10, 177);
             this.lblIndex.Name = "lblIndex";
             this.lblIndex.Size = new System.Drawing.Size(94, 13);
             this.lblIndex.TabIndex = 13;
