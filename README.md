@@ -4,6 +4,11 @@ AlphaMissenseViewer is designed to allow the rapid searching of the AlphaMissens
 
 The data was produced using the AlphaMissense algorithm ([Github](https://github.com/google-deepmind/alphamissense)) and described in the [Science paper](https://www.science.org/doi/10.1126/science.adg7492).
 
+## Getting the prebuilt program
+
+A prebuilt program is located in the Program folder. Due to security protocols set in place by Microsoft and some organisation's IT departments, downloading programs can be a trick problem. Consequently, the Program folder as an [help file](program/READMEmd) for downloading programs which may help. 
+
+
 ## Before you start
 
 The search function works by performing a [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) on the data file. To do this, the file must be decompressed using a program like 7zip or Windows 11's decompression function. To search for possible variants in a gene or transcript, the file most first be indexed using the program's Index function.
