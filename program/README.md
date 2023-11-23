@@ -77,5 +77,3 @@ And finally, select the 'Keep anyway' option (Figure 10) and the download will s
 ![figure 5](images/figure10.jpg)
 
 Figure 5
-
-Repeat the process for the BamReaderdll.dll file.
