@@ -17,3 +17,46 @@ Currently the AlphaMissense data files are [here](https://console.cloud.google.c
 When started the search buttons are disabled (figure 1), to enable them press the ``Select`` button in the top right and select a data file. 
 
 ![Figure 1](images/figure1.jpg)
+
+Figure 1
+
+![Figure 2a](images/figure2a.jpg)
+
+Figure 2a
+
+![Figure 2b](images/figure2b.jpg)
+
+Figure 2b
+
+![Figure 3a](images/figure3a.jpg)
+
+Figure 3a
+
+![Figure 3b(images/figure3b.jpg)
+
+Figure 3b
+
+![Figure 4a](images/figure4a.jpg)
+
+Figure 4a
+
+![Figure 4b(images/figure4b.jpg)
+
+Figure 4b
+
+![Figure 5a](images/figure5a.jpg)
+
+Figure 5a
+
+![Figure 5b(images/figure5b.jpg)
+
+Figure 5b
+
+![Figure 5c](images/figure5c.jpg)
+
+Figure 5c
+
+![Figure 6](images/figure6.jpg)
+
+Figure 6
+
